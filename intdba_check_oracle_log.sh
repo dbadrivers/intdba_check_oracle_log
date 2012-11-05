@@ -11,16 +11,13 @@
 if [ -f ~/.bash_profile ]; then
 . ~/.bash_profile
 fi
+#####if there is no ~/.bash_profile please define Oracle env
+
 alterdir=~/monitor
 
 if ! test -d ${alterdir}
 then
         mkdir -p ${alterdir}
-fi
-
-if ! test -f ${alterdir}/ok.log
- then
-        echo 'There is no rror & ORA- error_INFO in alter log 1 hour before' >${alterdir}/ok.log
 fi
 
 DBAEMAIL=dbadrivers@gmail.com;export DBAEMAIL
@@ -29,11 +26,11 @@ alert_dir=$ORACLE_BASE/admin/$ORACLE_SID/bdump; export alert_dir
 alterlog=${alert_dir}/alert_$ORACLE_SID.log;export alertlog
 err_alertlog=${alterdir}/error_alert.log;export err_alertlog
 errct=`cat  $alterlog | grep 'ORA-\|rror\|Checkpoint not complete' |wc -l`
-if [ $errct -ne "0" ];then
+if [ $errct -ge "0" ];then
 cat  $alterlog>${err_alertlog};
 cat  $alterlog>>${alterlog}_all;
 cat /dev/null >$alterlog;
-/usr/local/bin/sendEmail -f opm@itopm.com -t $DBAEMAIL -bcc rocpine@qq.com -s smtp.itopm.com -u "there_are_err_${IP}_${ORACLE_SID}_alter_log"  -o message-file=${err_alertlog} -xu "opm@itopm.com" -xp "sysmon"
+/usr/local/bin/sendEmail -f opm@itopm.com -t $DBAEMAIL -s smtp.itopm.com -u "there_are_err_${IP}_${ORACLE_SID}_alter_log"  -o message-file=${err_alertlog} -xu "opm@itopm.com" -xp "pasword"
 else
 cat  $alterlog>>${alterlog}_all;
 cat /dev/null >$alterlog;
